@@ -29,15 +29,18 @@ class KnightsTour {
     }
 
     private bool isSafe(int x, int y) {
+        // Sprawdzenie czy współrzędne są w granicach szachownicy i czy pole nie jest już zajęte
         return (x >= 0 && x < board.GetLength(0) && y >= 0 && y < board.GetLength(1) && board[x, y] == -1);
     }
 
     private void solveKT(int i, int x, int y, ref bool q) {
         for (int k = 0; k < a.Length && !q; k++){
+            // Obliczenie nowych współrzędnych po ruchu skoczka
             int u = x + a[k];
             int v = y + b[k];
             if (isSafe(u, v)) {
                 board[u, v] = i;
+                // Sparwdzennie czy postawiliśmy skoczka na ostatnim polu szachownicy
                 if (i == board.GetLength(0) * board.GetLength(1) - 1) {
                     q = true;
                     return;
@@ -55,6 +58,7 @@ class KnightsTour {
     }
 
     public void Run() {
+        // Ustawienie początkowej pozycji skoczka na szachownicy
         board[0, 0] = 0;
         bool q = false;
         solveKT(1, 0, 0, ref q);
