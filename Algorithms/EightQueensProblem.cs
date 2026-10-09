@@ -3,19 +3,23 @@ namespace Algorithms;
 class EightQueensProblem {
 
     // wiersze
-    bool[] a = {true, true, true, true, true, true, true, true};
-    // przekątne
-    bool[] b = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
-    bool[] c = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
-    // Kolumna w ktrej znajduje się hetman w danym wierszu
-    int[] x = {-1, -1, -1, -1, -1, -1, -1, -1};
+    private readonly bool[] _a = [true, true, true, true, true, true, true, true];
     
-    private bool isSafe(int i, int j) {
-        // + 7 w przkonten c by uniknąć ujemnych indeksów
-        return a[j] && b[i + j] && c[i - j + 7];
+    // przekątne
+    private readonly bool[] _b = [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true];
+    private readonly bool[] _c = [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true];
+    
+    // Kolumna, w której znajduje się hetman w danym wierszu
+    private readonly int[] _x = [-1, -1, -1, -1, -1, -1, -1, -1];
+    
+    private int _solutionsCount = 0;
+    
+    private bool _isSafe(int i, int j) {
+        // + 7 w przkonten _c by uniknąć ujemnych indeksów
+        return _a[j] && _b[i + j] && _c[i - j + 7];
     }
 
-    private void printSolution() {
+    private void _printSolution() {
         Console.WriteLine("Rozwiązanie problemu 8 hetmanów:\n");
 
         Console.Write("   ");
@@ -27,7 +31,7 @@ class EightQueensProblem {
         for (int i = 0; i < 8; i++) {
             Console.Write($"{i + 1,2} ");
             for (int j = 0; j < 8; j++) {
-                if (x[i] == j) {
+                if (_x[i] == j) {
                     Console.Write(" Q  ");
                 } else {
                     Console.Write(" .  ");
@@ -37,35 +41,74 @@ class EightQueensProblem {
         }
     }
 
-    private void solve8QP(int i, ref bool q) {
+    private void _solve8QP(int i, ref bool q) {
         int j;
         for (j = 0; j < 8 && !q; j++) {
-            if (isSafe(i, j)) {
-                x[i] = j;
-                a[j] = false;
-                b[i + j] = false;
-                c[i - j + 7] = false;
+            if (_isSafe(i, j)) {
+                _x[i] = j;
+                _a[j] = false;
+                _b[i + j] = false;
+                _c[i - j + 7] = false;
                 if (i == 7) {
                     q = true;
                 } else {
-                    solve8QP(i + 1, ref q);
+                    _solve8QP(i + 1, ref q);
                     if (!q) {
-                        a[j] = true;
-                        b[i + j] = true;
-                        c[i - j + 7] = true;
+                        _a[j] = true;
+                        _b[i + j] = true;
+                        _c[i - j + 7] = true;
                     }
                 }
             }
         }
     }
 
-    public void Run() {
+    private void _solve8QPALL(int i)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            if (_isSafe(i, j))
+            {
+                // Postaw hetmana
+                _x[i] = j;
+                _a[j] = false;
+                _b[i + j] = false;
+                _c[i - j + 7] = false;
+
+                if (i == 7)
+                {
+                    // Znaleziono kompletne rozwiązanie
+                    _solutionsCount++;
+                    _printSolution();
+                }
+                else
+                {
+                    // Idź do następnego wiersza
+                    _solve8QPALL(i + 1);
+                }
+
+                // Zawsze wykonaj backtracking
+                _a[j] = true;
+                _b[i + j] = true;
+                _c[i - j + 7] = true;
+            }
+        }
+    }
+
+    public void Run(bool runAll = false) {
+        if (runAll)
+        {
+            _solve8QPALL(0);
+            Console.WriteLine($"\nLiczba wszystkich znalezionych rozwiązań: {_solutionsCount}");
+            return;
+        }
+        
         bool q = false;
-        solve8QP(0, ref q);
+        _solve8QP(0, ref q);
         if (!q) {
             Console.WriteLine("Rozwiązanie problemu 8 hetmanów nie istnieje.");
         } else {
-            printSolution();
+            _printSolution();
         }
     }
 }
